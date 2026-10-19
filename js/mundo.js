@@ -5,7 +5,7 @@
  * (modelagem), púlpito com livro e fogueira (lore), estante (organização), sinalizador (final) e os pilares do painel.
  */
 import * as THREE from './vendor/three.module.min.js';
-import { atlas, recorte, chamas, lua as texLua, B, LA, N, LINHAS } from './texturas.js';
+import { atlas, recorte, chamas, lua as texLua, planta, B, LA, N, LINHAS } from './texturas.js';
 
 // ---------------------------------------------------------------- acaso com semente (a ilha é sempre a mesma)
 function mulberry(a) {
@@ -155,22 +155,159 @@ export function criarMundo(canvas, opcoes = {}) {
   }
   const livre = (x, z) => !(x >= LUGAR.painel[0] - 13 && x <= LUGAR.painel[0] + 13 && z >= LUGAR.painel[1] - 28 && z <= LUGAR.painel[1] + 3);
   const longe = (x, z) => livre(x, z) && Object.values(LUGAR).every(([a, b]) => Math.hypot(x - a, z - b) > 10 && Math.hypot(x - (a + a / (Math.hypot(a, b) || 1) * 10), z - (b + b / (Math.hypot(a, b) || 1) * 10)) > 7);
-  for (let i = 0; i < 900; i++) {
-    const x = Math.floor((r2() * 2 - 1) * R), z = Math.floor((r2() * 2 - 1) * R), h = H(x, z);
-    if (h <= AGUA + 2 || h > AGUA + 13 || !longe(x, z) || fbm(x * 0.09 + 40, z * 0.09) < 0.48) continue;
-    // carvalho do jogo: tronco de 4 a 6, duas camadas 5×5 sem os cantos, uma 3×3, uma cruz no alto
-    const alto = 4 + Math.floor(r2() * 3), topoY = h + alto;
-    for (let y = 1; y <= alto; y++) blocos.push({ p: [x, h + y, z], b: 'tronco' });
-    for (const [dy, raio] of [[-1, 2], [0, 2], [1, 1], [2, 1]]) {
+  const ocupado = new Set();
+  const marcar = (x, y, z) => ocupado.add(x + ',' + y + ',' + z);
+  const vago = (x, y, z) => !ocupado.has(x + ',' + y + ',' + z);
+  const pertoDeCena = (x, z, d) => !livre(x, z) || Object.entries(LUGAR).some(([n, [a, b]]) => n !== 'topo' && Math.hypot(x - a, z - b) < d);
+  const arvore = (x, z, h, tipo) => {
+    const alto = (tipo === 'pinheiro' ? 6 : 4) + Math.floor(r2() * 3), topoY = h + alto;
+    for (let y = 1; y <= alto; y++) { blocos.push({ p: [x, h + y, z], b: 'tronco' }); marcar(x, h + y, z); }
+    // carvalho: duas camadas 5×5 sem os cantos, uma 3×3, uma cruz no alto. Pinheiro: camadas que afinam até a ponta
+    const camadas = tipo === 'pinheiro'
+      ? [[-4, 2], [-3, 1], [-2, 2], [-1, 1], [0, 1], [1, 0]]
+      : [[-1, 2], [0, 2], [1, 1], [2, 1]];
+    for (const [dy, raio] of camadas) {
       for (let a = -raio; a <= raio; a++) for (let b = -raio; b <= raio; b++) {
-        const canto = Math.abs(a) === raio && Math.abs(b) === raio;
-        if (canto && (dy === 2 || r2() < 0.6)) continue;
+        const canto = Math.abs(a) === raio && Math.abs(b) === raio && raio > 0;
+        if (canto && (tipo === 'pinheiro' || dy === 2 || r2() < 0.6)) continue;
         if (a === 0 && b === 0 && dy <= 0) continue;
-        blocos.push({ p: [x + a, topoY + dy, z + b], b: 'folha' });
+        blocos.push({ p: [x + a, topoY + dy, z + b], b: 'folha' }); marcar(x + a, topoY + dy, z + b);
+      }
+    }
+  };
+  for (let i = 0; i < 1300; i++) {
+    const x = Math.floor((r2() * 2 - 1) * R), z = Math.floor((r2() * 2 - 1) * R), h = H(x, z);
+    if (h <= AGUA + 2 || h > AGUA + 14 || !longe(x, z) || fbm(x * 0.09 + 40, z * 0.09) < 0.46 || !vago(x, h + 1, z)) continue;
+    arvore(x, z, h, h > AGUA + 9 || r2() < 0.25 ? 'pinheiro' : 'carvalho');
+  }
+  // arbustos (um bloco de folha) e pedras com musgo
+  for (let i = 0; i < 260; i++) {
+    const x = Math.floor((r2() * 2 - 1) * R), z = Math.floor((r2() * 2 - 1) * R), h = H(x, z);
+    if (h <= AGUA + 1 || pertoDeCena(x, z, 8) || !vago(x, h + 1, z)) continue;
+    if (r2() < 0.6) { blocos.push({ p: [x, h + 1, z], b: 'folha' }); marcar(x, h + 1, z); }
+    else {
+      const n = 1 + Math.floor(r2() * 3);
+      for (let q = 0; q < n; q++) {
+        const xx = x + (q % 2), zz = z + (q > 1 ? 1 : 0), hh = H(xx, zz);
+        if (hh > AGUA && vago(xx, hh + 1, zz)) { blocos.push({ p: [xx, hh + 1, zz], b: r2() < 0.6 ? 'musgo' : 'pedregulho' }); marcar(xx, hh + 1, zz); }
       }
     }
   }
-  malha(blocos);
+
+  // píer de tábua saindo da praia, na direção da câmera do começo, com uma tocha acesa na ponta
+  const pier = [];
+  {
+    const dx = 0.66, dz = 0.75;
+    let ux = 0, uz = 0;
+    for (let d = 0; d < 80; d++) { const x = Math.round(dx * d), z = Math.round(dz * d); if (H(x, z) < 0) break; ux = x; uz = z; }
+    for (let d = 0; d < 9; d++) {
+      const x = Math.round(ux + dx * d), z = Math.round(uz + dz * d);
+      if (H(x, z) >= AGUA + 1 && d < 2) continue;
+      pier.push({ p: [x, AGUA + 1, z], b: 'tabua' }); marcar(x, AGUA + 1, z);
+      if (d % 3 === 2) pier.push({ p: [x, AGUA, z], b: 'tronco' });
+    }
+    const fim = pier.filter(b => b.b === 'tabua').pop();
+    if (fim) {
+      const tocha = peca(2 / 16, 10 / 16, 2 / 16, 'tronco');
+      tocha.position.set(fim.p[0], AGUA + 1.5 + 5 / 16, fim.p[2]); cena.add(tocha);
+      const chama = new THREE.Mesh(new THREE.BoxGeometry(2.2 / 16, 2.2 / 16, 2.2 / 16), new THREE.MeshBasicMaterial({ color: 0xffd36b }));
+      chama.position.set(fim.p[0], AGUA + 1.5 + 11 / 16, fim.p[2]); cena.add(chama);
+      const luz = new THREE.PointLight(0xffb45a, 6, 10, 1.6); luz.position.set(fim.p[0], AGUA + 2.6, fim.p[2]); cena.add(luz);
+    }
+  }
+  malha([...blocos, ...pier]);
+
+  // ilhotas ao longe, para o mar não ficar vazio
+  {
+    const ilhotas = [];
+    [[-120, -60, 9], [130, -90, 7], [-90, 140, 6], [160, 70, 8], [20, -170, 10]].forEach(([cx, cz, r], n) => {
+      const rr = mulberry(70 + n);
+      for (let x = -r; x <= r; x++) for (let z = -r; z <= r; z++) {
+        const d = Math.hypot(x, z) / r + (fbm(x * 0.3 + n * 10, z * 0.3) - 0.5) * 0.5;
+        if (d > 1) continue;
+        const h = AGUA + Math.round((1 - d) * (r * 0.7) * (0.6 + rr() * 0.4));
+        for (let y = AGUA; y <= h; y++) ilhotas.push({ p: [cx + x, y, cz + z], b: y === h ? (h <= AGUA + 1 ? 'areia' : 'grama') : 'pedra' });
+        if (h > AGUA + 2 && rr() < 0.08) for (let y = 1; y <= 4; y++) ilhotas.push({ p: [cx + x, h + y, cz + z], b: y === 4 ? 'folha' : 'tronco' });
+      }
+    });
+    malha(ilhotas);
+  }
+
+  // plantas: dois planos cruzados com a textura transparente, como no jogo
+  function geoCruz() {
+    const g = new THREE.BufferGeometry(), pos = [], uv = [], nor = [], idx = [];
+    [Math.PI / 4, -Math.PI / 4].forEach((ang, k2) => {
+      const c = Math.cos(ang) * 0.5, s2 = Math.sin(ang) * 0.5;
+      pos.push(-c, -0.5, -s2, c, -0.5, s2, c, 0.5, s2, -c, 0.5, -s2);
+      uv.push(0, 0, 1, 0, 1, 1, 0, 1);
+      for (let q = 0; q < 4; q++) nor.push(0, 1, 0); // luz de cima, igual dos dois lados
+      const o = k2 * 4; idx.push(o, o + 1, o + 2, o, o + 2, o + 3);
+    });
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setIndex(idx);
+    return g;
+  }
+  const cruz = geoCruz();
+  function plantas(nome, lista, geo = cruz) {
+    if (!lista.length) return;
+    const t = new THREE.CanvasTexture(planta(nome)); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.SRGBColorSpace;
+    // sem luz de face: os dois lados do plano com o mesmo tom (com luz, o lado de trás ficava preto)
+    const mat = new THREE.MeshBasicMaterial({ map: t, alphaTest: 0.5, side: THREE.DoubleSide, color: 0x8794aa });
+    mat.onBeforeCompile = comNevoa;
+    const m = new THREE.InstancedMesh(geo, mat, lista.length);
+    lista.forEach(([x, y, z, ry = 0], i) => { tmp.position.set(x, y, z); tmp.rotation.set(0, ry, 0); tmp.scale.setScalar(1); tmp.updateMatrix(); m.setMatrixAt(i, tmp.matrix); });
+    cena.add(m);
+  }
+  {
+    const capim = [], papoula = [], dente = [], azul = [], cana = [], vitoria = [];
+    for (let x = -R; x <= R; x++) for (let z = -R; z <= R; z++) {
+      const h = H(x, z);
+      if (h < 0 || PRACA.has(k(x, z)) || !vago(x, h + 1, z) || pertoDeCena(x, z, 6) || Math.hypot(x - LUGAR.mural[0], z - LUGAR.mural[1]) < 9.5) continue;
+      const grama = h > AGUA + 1 && h <= AGUA + 15;
+      const beira = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => H(x + a, z + b) < 0);
+      const r = r2();
+      if (beira && h <= AGUA + 2 && r < 0.3) { const alto = 1 + Math.floor(r2() * 3); for (let y = 1; y <= alto; y++) cana.push([x, h + y, z]); continue; }
+      if (!grama) continue;
+      const campo = fbm(x * 0.15 + 5, z * 0.15 + 9);
+      if (r < 0.32 * campo + 0.05) capim.push([x, h + 1, z, r2() * 3]);
+      else if (r < 0.36 * campo + 0.08) [papoula, dente, azul][Math.floor(r2() * 3)].push([x, h + 1, z, r2() * 3]);
+    }
+    // vitórias-régias na água rasa perto da costa
+    for (let x = -R - 5; x <= R + 5; x++) for (let z = -R - 5; z <= R + 5; z++) {
+      if (H(x, z) >= 0) continue;
+      const perto = [[2, 0], [-2, 0], [0, 2], [0, -2], [1, 1], [-1, -1]].some(([a, b]) => H(x + a, z + b) >= 0);
+      if (perto && r2() < 0.07) vitoria.push([x, AGUA + 0.6, z, r2() * 6]);
+    }
+    plantas('capim', capim); plantas('papoula', papoula); plantas('dente', dente); plantas('azulzinha', azul); plantas('cana', cana);
+    const placa = new THREE.PlaneGeometry(1, 1); placa.rotateX(-Math.PI / 2);
+    plantas('vitoria', vitoria, placa);
+  }
+
+  // vaga-lumes: pontinhos que acendem e apagam devagar, rente ao chão
+  const vagalumes = (() => {
+    const n = 140, pos = new Float32Array(n * 3), cores = new Float32Array(n * 3), base = [];
+    for (let i = 0; i < n; i++) {
+      let x, z, h;
+      do { x = (r2() * 2 - 1) * R * 0.9; z = (r2() * 2 - 1) * R * 0.9; h = H(Math.round(x), Math.round(z)); } while (h < AGUA + 1);
+      base.push([x, h + 1.2 + r2() * 2.2, z, r2() * 10, 0.5 + r2()]);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(cores, 3));
+    const pts = new THREE.Points(g, new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    pts.frustumCulled = false;
+    cena.add(pts);
+    return t => {
+      base.forEach(([x, y, z, f, v], i) => {
+        pos[i * 3] = x + Math.sin(t * 0.3 * v + f) * 0.8; pos[i * 3 + 1] = y + Math.sin(t * 0.5 * v + f * 2) * 0.4; pos[i * 3 + 2] = z + Math.cos(t * 0.25 * v + f) * 0.8;
+        const b = Math.max(0, Math.sin(t * 0.9 * v + f * 3)) ** 3;
+        cores[i * 3] = 0.85 * b; cores[i * 3 + 1] = 1.0 * b; cores[i * 3 + 2] = 0.35 * b;
+      });
+      g.attributes.position.needsUpdate = true; g.attributes.color.needsUpdate = true;
+    };
+  })();
 
   // ---- água: ondas em degrau
   const agua = new THREE.Mesh(new THREE.PlaneGeometry(600, 600, 150, 150), new THREE.MeshPhongMaterial({ color: 0x1d3a78, shininess: 70, specular: 0x5a6f99, transparent: true, opacity: 0.9, flatShading: true }));
@@ -541,6 +678,7 @@ export function criarMundo(canvas, opcoes = {}) {
     const t = (agora - t0) / 1000, dt = Math.min(0.1, t - tAnterior); tAnterior = t;
     tempoAgua.value = t; uNT.value = t;
     for (const c of Object.values(cenas)) if (c.quadro) c.quadro(t, dt);
+    if (!calmo) vagalumes(t);
 
     if (orbita) {
       const a = t * orbita.vel + orbita.fase;

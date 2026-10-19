@@ -37,7 +37,16 @@ img, video, canvas { display: block; }
 /* ---------- mundo e película ---------- */
 #mundo { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: 0; image-rendering: pixelated; }
 .pelicula { position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: radial-gradient(130% 100% at 50% 45%, transparent 65%, rgba(0, 0, 0, 0.35) 100%); }
+  background: radial-gradient(120% 95% at 50% 45%, transparent 50%, rgba(0, 0, 0, 0.6) 100%); }
+/* ar de gravação antiga: grão que treme, linhas finas e a luz oscilando de leve */
+.pelicula::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 3px); animation: oscila 6s steps(30) infinite; }
+.pelicula::after {
+  content: ''; position: absolute; inset: -50%; opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grao 0.5s steps(4) infinite;
+}
+@keyframes grao { 0% { transform: translate(0, 0); } 25% { transform: translate(-4%, 3%); } 50% { transform: translate(3%, -2%); } 75% { transform: translate(-2%, -4%); } }
+@keyframes oscila { 0%, 100% { opacity: 1; } 7% { opacity: .6; } 9% { opacity: 1; } 52% { opacity: .85; } 54% { opacity: 1; } }
 .sem-webgl #mundo { display: none; }
 /* véu de névoa rente ao pé da tela, passando devagar */
 .veu { position: fixed; left: -20%; right: -20%; bottom: -10%; height: 55%; z-index: 1; pointer-events: none; opacity: .5; }

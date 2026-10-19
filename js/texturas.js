@@ -130,6 +130,10 @@ const DESENHOS = {
     for (let y = 3; y < 14; y += 2) for (let x = 2; x < 14; x++) if (r() < 0.75) px(x, y, '#5e5240');
   },
   fogo(px, r) { /* desenhado à parte, com transparência */ },
+  musgo(px, r) {
+    DESENHOS.pedregulho(px, r);
+    for (let i = 0; i < 40; i++) { const x = Math.floor(r() * 16), y = Math.floor(r() * 16); px(x, y, pega(r, ['#56703a', '#4a6334', '#61803f'])); }
+  },
 };
 
 const ORDEM = Object.keys(DESENHOS);
@@ -142,7 +146,7 @@ export const B = {
   tabua: [T.tabua, T.tabua, T.tabua], pedregulho: [T.pedregulho, T.pedregulho, T.pedregulho], vidro: [T.vidro, T.vidro, T.vidro],
   la: [T.la, T.la, T.la], ferro: [T.ferro, T.ferro, T.ferro], sinalizador: [T.sinalizador, T.sinalizador, T.obsidiana],
   obsidiana: [T.obsidiana, T.obsidiana, T.obsidiana], estante: [T.tabua, T.estante, T.tabua], tijolo: [T.tijolo, T.tijolo, T.tijolo],
-  argila: [T.argila, T.argila, T.argila], barril: [T.barril_topo, T.barril_lado, T.barril_topo], pedra_tijolo: [T.pedra_tijolo, T.pedra_tijolo, T.pedra_tijolo],
+  argila: [T.argila, T.argila, T.argila], musgo: [T.musgo, T.musgo, T.musgo], barril: [T.barril_topo, T.barril_lado, T.barril_topo], pedra_tijolo: [T.pedra_tijolo, T.pedra_tijolo, T.pedra_tijolo],
 };
 
 // cores de lã do jogo
@@ -203,5 +207,39 @@ export function lua() {
     g.fillRect(x, y, 1, 1);
   }
   [[5, 5, 2], [9, 8, 3], [6, 10, 1], [10, 4, 1]].forEach(([x, y, s]) => { g.fillStyle = '#c4c9d6'; g.fillRect(x, y, s, s); });
+  return c;
+}
+
+// plantas (planos cruzados com transparência, como no jogo): capim, flores, cana e vitória-régia
+export function planta(nome) {
+  const c = document.createElement('canvas'); c.width = c.height = 16;
+  const g = c.getContext('2d'), r = semente(400 + nome.length * 13 + nome.charCodeAt(0));
+  const px = (x, y, cor) => { g.fillStyle = cor; g.fillRect(x, y, 1, 1); };
+  const caule = (x, y0, y1, cor = '#3f7a2a') => { for (let y = y0; y <= y1; y++) px(x, y, cor); };
+  if (nome === 'capim') {
+    for (let x = 1; x < 15; x++) {
+      if (r() < 0.35) continue;
+      const alto = 5 + Math.floor(r() * 9);
+      let xx = x;
+      for (let y = 15; y > 15 - alto; y--) { px(xx, y, pega(r, ['#4f8a34', '#5d9a3c', '#447a2d'])); if (r() < 0.15) xx = Math.max(0, Math.min(15, xx + (r() < 0.5 ? -1 : 1))); }
+    }
+  } else if (nome === 'papoula' || nome === 'dente') {
+    caule(7, 7, 15); px(6, 11, '#3f7a2a'); px(8, 12, '#3f7a2a'); px(5, 10, '#3f7a2a'); px(9, 11, '#3f7a2a');
+    const [a, b2] = nome === 'papoula' ? ['#c8261c', '#e8392b'] : ['#f2d22a', '#ffe86a'];
+    for (let y = 3; y < 7; y++) for (let x = 5; x < 10; x++) if (!((x === 5 || x === 9) && (y === 3 || y === 6))) px(x, y, r() < 0.5 ? a : b2);
+    px(7, 5, nome === 'papoula' ? '#2a1a12' : '#c99a12');
+  } else if (nome === 'azulzinha') {
+    [[4, 9], [10, 7], [7, 4], [11, 11]].forEach(([x, y]) => {
+      caule(x, y + 1, 15);
+      px(x, y, '#f0f4ff'); px(x - 1, y, '#cfdcff'); px(x + 1, y, '#cfdcff'); px(x, y - 1, '#cfdcff'); px(x, y + 1, '#f6e36a');
+    });
+  } else if (nome === 'cana') {
+    [3, 8, 12].forEach(x => { for (let y = 0; y < 16; y++) { px(x, y, y % 5 === 0 ? '#7fae5a' : '#9ccc6e'); px(x + 1, y, y % 5 === 0 ? '#6a9a48' : '#86b85c'); } px(x + 2, 4 + x % 5, '#6a9a48'); });
+  } else if (nome === 'vitoria') {
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+      const d = Math.hypot(x - 7.5, y - 7.5);
+      if (d < 7.2 && !(x > 7 && Math.abs(y - 7.5) < 1.2)) px(x, y, pega(r, ['#2f6a2a', '#3a7a30', '#2a5e25']));
+    }
+  }
   return c;
 }
