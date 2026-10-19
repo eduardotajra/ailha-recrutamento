@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Ilha · Precisamos de mãos</title>
+<meta name="description" content="A Ilha, SMP de terror e sobrevivência com mod próprio, procura gente para construção, arte, modelagem e lore.">
+<meta name="theme-color" content="#05070b">
+<meta property="og:title" content="A Ilha · Precisamos de mãos">
+<meta property="og:description" content="Construção, arte, modelagem e lore. Responda ao chamado.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2305070b'/%3E%3Crect x='6' y='2' width='4' height='12' fill='%239ff6ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jersey+10&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/inicio.css">
+</head>
+<body>
+
+<div class="abertura" id="abertura" aria-hidden="true">
+  <canvas id="estatica" width="160" height="90"></canvas>
+  <pre id="radio"></pre>
+  <button type="button" id="pular">pular</button>
+</div>
+
+<canvas id="mundo" aria-hidden="true"></canvas>
+<div class="pelicula" aria-hidden="true"></div>
+
+<header class="topo">
+  <a class="marca" href="index.html"><b>A Ilha</b><i></i></a>
+  <nav aria-label="Páginas">
+    <a href="index.html" aria-current="page">Chamado</a>
+    <a href="candidatura.html">Ficha</a>
+    <a href="painel.html">Ao vivo</a>
+  </nav>
+  <div class="dir">
+    <a class="vivo" href="painel.html" title="Ver o painel ao vivo"><span class="ponto"></span><b id="vivoN">0</b><span id="vivoT">responderam</span></a>
+    <button class="botao-som" type="button" aria-pressed="false" title="Tocar a música do menu do jogo"><span class="ondas" aria-hidden="true"><i></i><i></i><i></i></span><span>Música</span></button>
+  </div>
+</header>
+
+<main id="trilha">
+  <section class="cap heroi" data-cena="geral">
+    <div class="texto">
+      <p class="rotulo"><b>■</b> Transmissão aberta · recrutamento da equipe</p>
+      <h1 class="grande">Precisamos<br>de mãos.</h1>
+      <p class="lead">A Ilha é um SMP de terror e sobrevivência com mod próprio. O mundo está crescendo mais rápido do que a equipe que o constrói.</p>
+      <div class="acoes">
+        <a class="mc jogar" href="candidatura.html">Responder ao chamado</a>
+        <a class="mc" href="#construcao">Ver as vagas</a>
+        <button class="mc" type="button" id="verVideo" hidden>▶ Vídeo</button>
+      </div>
+    </div>
+    <p class="rolar" aria-hidden="true"><span></span>role para descer</p>
+  </section>
+
+  <div id="areas"></div>
+
+  <section class="cap final" data-cena="sinal">
+    <div class="texto">
+      <p class="rotulo"><b>■</b> fim da transmissão</p>
+      <h2 class="grande" id="fraco">O sinal está fraco.</h2>
+      <p class="lead">Responder leva uns dez minutos. O rascunho fica salvo se você fechar a página, e o painel ao vivo só mostra números.</p>
+      <div class="acoes">
+        <a class="mc jogar" href="candidatura.html">Responder ao chamado</a>
+        <a class="mc" href="painel.html">Quem já respondeu</a>
+      </div>
+      <p class="semspoiler">Nada nesta página conta a história da ilha. Quem entra descobre por dentro.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <span>A Ilha · SMP de terror e sobrevivência · Minecraft Java 1.20.1</span>
+  <span>Não é um produto oficial do Minecraft. Não aprovado pela Mojang ou pela Microsoft, nem associado a elas.</span>
+</footer>
+
+<dialog class="cinema" id="cinema" aria-label="Vídeo">
+  <button class="fechar" type="button" aria-label="Fechar">✕</button>
+  <div class="tela-cinema" id="telaCinema"></div>
+</dialog>
+
+<script src="js/config.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/comum.js"></script>
+<script type="module" src="js/inicio.js"></script>
+</body>
+</html>

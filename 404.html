@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Ilha · Caiu no vazio</title>
+<meta name="theme-color" content="#05070b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2305070b'/%3E%3Crect x='6' y='2' width='4' height='12' fill='%239ff6ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jersey+10&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<style>
+  /* a tela de morte do jogo, em vermelho, por cima do vazio */
+  body { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 24px; background: linear-gradient(180deg, rgba(120, 0, 0, .45), rgba(40, 0, 0, .75)), #05070b; }
+  h1 { margin: 0; font: 400 clamp(64px, 11vw, 140px)/0.9 var(--pixel); color: #fff; text-shadow: 0.04em 0.04em 0 #3f3f3f; }
+  p { margin: 18px 0 30px; font: 400 26px/1.1 var(--pixel); color: #fff; text-shadow: 2px 2px 0 #3f3f3f; }
+  p b { color: #ffff55; font-weight: 400; }
+  .acoes { display: grid; gap: 8px; width: min(400px, 100%); margin: 0 auto; }
+  .bloco { width: 22px; height: 22px; margin: 0 auto 28px; background: #6d7177; box-shadow: inset 3px 3px 0 #9a9ea4, inset -3px -3px 0 #45484c; animation: cai 2.2s cubic-bezier(.5, 0, 1, .5) infinite; }
+  @keyframes cai { 0% { transform: translateY(-40vh); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(40vh) rotate(180deg); opacity: 0; } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="bloco" aria-hidden="true"></div>
+    <h1>Você caiu no vazio!</h1>
+    <p>Esta página não existe. Pontuação: <b>404</b></p>
+    <div class="acoes">
+      <a class="mc" href="index.html">Renascer</a>
+      <a class="mc" href="candidatura.html">Ir para a ficha</a>
+    </div>
+  </main>
+</body>
+</html>

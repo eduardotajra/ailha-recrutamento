@@ -1,0 +1,79 @@
+/* Página do chamado: o texto rola por cima da ilha, e a câmera anda de uma cena para outra. */
+#trilha { position: relative; z-index: 2; }
+.cap { position: relative; min-height: 100vh; padding: 110px clamp(16px, 5vw, 80px) 60px; display: flex; }
+.grande {
+  margin: 0; font: 400 clamp(64px, 11vw, 168px)/0.84 var(--pixel); letter-spacing: -0.01em; color: #fff;
+  text-shadow: 0.045em 0.045em 0 #1c1c22;
+}
+.lead { font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; color: #d9dbd6; max-width: 520px; margin: 22px 0 0; text-shadow: 0 1px 12px #000; }
+.acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.acoes.centro { justify-content: center; }
+
+/* topo */
+.heroi { align-items: flex-end; }
+.heroi .texto { max-width: 900px; }
+.heroi .rotulo { margin: 0 0 18px; }
+.rolar { position: absolute; right: clamp(16px, 5vw, 80px); bottom: 60px; margin: 0; display: flex; align-items: center; gap: 12px; font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--apagado); }
+.rolar span { width: 12px; height: 12px; background: #fff; box-shadow: inset -3px -3px 0 #888; animation: cai 1.6s steps(6) infinite; }
+@keyframes cai { 0%, 20% { transform: translateY(-10px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+/* áreas: cada uma ocupa bastante rolagem, e a janela fica parada enquanto a cena se monta */
+.area { min-height: 240vh; display: block; padding-top: 0; }
+.area .gruda { position: sticky; top: 16vh; display: flex; }
+.area.direita .gruda { justify-content: flex-end; }
+.area .dica { width: min(470px, 100%); }
+.area .num { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 4px; }
+.area .num .rotulo { color: #b9a6ff; }
+.area h2 { margin: 0; font: 400 clamp(56px, 6vw, 84px)/0.86 var(--pixel); color: #fff; text-shadow: 3px 3px 0 #3f3f3f; }
+.area .chamada { margin: 10px 0 14px; font: 500 18px/1.35 var(--corpo); color: var(--sinal); }
+.area .mais { display: none; }
+.area .sobre { margin: 0 0 16px; color: #c9c6d3; font-size: 15.5px; }
+.area ul { list-style: none; margin: 0 0 16px; padding: 0; font-size: 15px; }
+.area li { position: relative; padding-left: 20px; margin: 6px 0; color: var(--texto); }
+.area li::before { content: ''; position: absolute; left: 2px; top: 0.55em; width: 7px; height: 7px; background: #8f6bff; box-shadow: 2px 2px 0 #3a1f8a; }
+.area .ajuda { margin: 0 0 18px; color: #a59fb5; font-size: 14px; }
+.area .ajuda b { color: #e6e1f2; font-weight: 600; }
+.area .pe { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.area .conta { font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #a59fb5; }
+.area .conta b { font: 400 40px/0.7 var(--pixel); color: #fff; letter-spacing: 0; margin-right: 6px; text-shadow: 2px 2px 0 #3f3f3f; }
+
+/* barra de experiência: enche junto com a cena */
+.xp { position: relative; height: 10px; margin: 0 0 18px; background: #000; border: 2px solid #000; box-shadow: inset 0 0 0 1px #2a2a2a; }
+.xp i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(180deg, #c8ff6a 0 30%, #80ff20 30% 70%, #3d9e10 70%); }
+.xp::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), #000 calc(10% - 2px) 10%); }
+.xp b { position: absolute; left: 50%; top: -24px; transform: translateX(-50%); font: 400 24px/1 var(--pixel); color: #80ff20; text-shadow: 2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000; }
+
+/* final */
+.final { min-height: 170vh; }
+.final .texto { position: sticky; top: 24vh; align-self: flex-start; margin-top: 30vh; max-width: 620px; }
+.final .grande { transition: color .6s, text-shadow .6s; }
+.final.aceso .grande { color: var(--sinal); text-shadow: 0.045em 0.045em 0 #0b3a40, 0 0 40px rgba(159, 246, 255, 0.45); }
+.semspoiler { margin: 34px 0 0; font: 500 11px/1.5 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--fraco); }
+
+/* vídeo */
+.cinema { overflow: visible; width: min(1200px, 94vw); padding: 0; border: 0; background: #000; box-shadow: 0 0 0 2px #000, 0 0 0 4px #555, 0 40px 120px #000; }
+.cinema::backdrop { background: rgba(0, 0, 0, .8); }
+.tela-cinema { aspect-ratio: 16 / 9; }
+.tela-cinema video, .tela-cinema iframe { width: 100%; height: 100%; border: 0; }
+.cinema .fechar { position: absolute; right: 0; top: -46px; background: none; border: 0; color: #fff; font: 400 30px/1 var(--pixel); cursor: pointer; padding: 8px; }
+
+/* entrada das letras grandes */
+.letra { display: inline-block; opacity: 0; transform: translateY(0.25em); animation: letra .5s steps(4) forwards; }
+@keyframes letra { to { opacity: 1; transform: none; } }
+
+@media (max-width: 760px) {
+  .cap { padding: 90px 16px 40px; }
+  .heroi .texto { padding-bottom: 40px; }
+  .rolar { display: none; }
+  .area { min-height: 210vh; }
+  .area .gruda { top: auto; bottom: 0; position: sticky; padding-top: 52vh; }
+  .area .dica { padding: 16px 16px 18px; }
+  .area .sobre, .area .ajuda, .area ul { display: none; }
+  .area .dica.aberta .sobre, .area .dica.aberta .ajuda, .area .dica.aberta ul { display: block; }
+  .area .mais { display: inline-block; margin: -4px 0 14px; padding: 0; background: none; border: 0; color: #b9a6ff; font: 500 12px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .area .mais::after { content: ' ▾'; }
+  .area .dica.aberta .mais::after { content: ' ▴'; }
+  .area h2 { font-size: 54px; }
+  .area ul { font-size: 14px; }
+  .acoes .mc { flex: 1 1 auto; }
+}

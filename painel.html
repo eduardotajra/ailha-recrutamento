@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Ilha · Ao vivo</title>
+<meta name="description" content="Quantas fichas cada área da equipe de A Ilha já recebeu, ao vivo.">
+<meta name="theme-color" content="#05070b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2305070b'/%3E%3Crect x='6' y='2' width='4' height='12' fill='%239ff6ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jersey+10&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/painel.css">
+</head>
+<body>
+
+<canvas id="mundo" aria-hidden="true"></canvas>
+<div class="pelicula" aria-hidden="true"></div>
+
+<header class="topo">
+  <a class="marca" href="index.html"><b>A Ilha</b><i></i></a>
+  <nav aria-label="Páginas">
+    <a href="index.html">Chamado</a>
+    <a href="candidatura.html">Ficha</a>
+    <a href="painel.html" aria-current="page">Ao vivo</a>
+  </nav>
+  <div class="dir">
+    <a class="vivo" href="painel.html"><span class="ponto"></span><b id="vivoN">0</b><span id="vivoT">responderam</span></a>
+    <button class="botao-som" type="button" aria-pressed="false" title="Tocar a música do menu do jogo"><span class="ondas" aria-hidden="true"><i></i><i></i><i></i></span><span>Música</span></button>
+  </div>
+</header>
+
+<main class="painel">
+  <section class="placar-topo">
+    <p class="rotulo"><span class="ponto"></span> Ao vivo <span id="estado"></span></p>
+    <h1><b id="total">0</b><span id="totalTxt">fichas recebidas</span></h1>
+    <p class="explica">Cada torre é uma área. Cada bloco, uma ficha.</p>
+  </section>
+
+  <div class="placas" id="placas" aria-hidden="true"></div>
+
+  <section class="chat" aria-label="Últimas fichas">
+    <ol id="recentes"><li class="vazio">Nenhuma ficha ainda. A primeira pode ser a sua.</li></ol>
+  </section>
+
+  <div class="canto">
+    <a class="mc jogar" href="candidatura.html">Mandar a minha</a>
+  </div>
+
+  <table class="tabela" id="tabela"><caption>Fichas por área</caption><tbody></tbody></table>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/comum.js"></script>
+<script type="module" src="js/painel.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Ilha · Ficha da equipe</title>
+<meta name="description" content="Ficha de candidatura para a equipe de A Ilha.">
+<meta name="theme-color" content="#05070b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2305070b'/%3E%3Crect x='6' y='2' width='4' height='12' fill='%239ff6ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jersey+10&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/ficha.css">
+</head>
+<body class="tela-ficha">
+
+<canvas id="mundo" aria-hidden="true"></canvas>
+<div class="pelicula" aria-hidden="true"></div>
+
+<header class="topo">
+  <a class="marca" href="index.html"><b>A Ilha</b><i></i></a>
+  <nav aria-label="Páginas">
+    <a href="index.html">Chamado</a>
+    <a href="candidatura.html" aria-current="page">Ficha</a>
+    <a href="painel.html">Ao vivo</a>
+  </nav>
+  <div class="dir">
+    <a class="vivo" href="painel.html" title="Ver o painel ao vivo"><span class="ponto"></span><b id="vivoN">0</b><span id="vivoT">responderam</span></a>
+    <button class="botao-som" type="button" aria-pressed="false" title="Tocar a música do menu do jogo"><span class="ondas" aria-hidden="true"><i></i><i></i><i></i></span><span>Música</span></button>
+  </div>
+</header>
+
+<main class="ficha-pagina">
+  <form class="janela dica" id="ficha" novalidate autocomplete="on">
+      <p class="rascunho" id="rascunho" hidden>rascunho salvo neste navegador</p>
+
+      <!-- 1 -->
+      <section class="etapa" data-titulo="Quem é você">
+        <header><span class="rotulo">Etapa 1 de 5</span><h1>Quem é você</h1><p>O básico, para a gente saber com quem está falando.</p></header>
+        <div class="campos dois">
+          <label class="campo"><span>Como quer ser chamado</span><input name="nome" required maxlength="60" autocomplete="nickname"></label>
+          <label class="campo"><span>Idade</span><input name="idade" type="number" required min="16" max="99" inputmode="numeric"></label>
+          <label class="campo"><span>Discord</span><input name="discord" required maxlength="40" placeholder="@seu.usuario" autocomplete="off" spellcheck="false"><small>Só a equipe vê. É por aqui que a gente te chama.</small></label>
+          <label class="campo"><span>O que você faz hoje</span><input name="ocupacao" required maxlength="80" placeholder="estudo, trabalho, os dois..."></label>
+        </div>
+        <fieldset class="campo">
+          <legend>Pronomes</legend>
+          <div class="fichas" data-nome="pronomes" data-tipo="radio" data-opcoes="ele/dele|ela/dela|elu/delu|prefiro não dizer|outro"></div>
+          <input name="pronomesOutro" class="se-outro" maxlength="30" placeholder="quais?" hidden aria-label="Quais pronomes">
+        </fieldset>
+      </section>
+
+      <!-- 2 -->
+      <section class="etapa" data-titulo="Seu tempo" hidden>
+        <header><span class="rotulo">Etapa 2 de 5</span><h1>Seu tempo</h1><p>Sem resposta certa. Saber de verdade ajuda a dividir o trabalho.</p></header>
+        <div class="campo">
+          <label for="horas"><span>Quanto tempo por semana você consegue dedicar</span></label>
+          <div class="regua"><input id="horas" name="horas" type="range" min="1" max="30" value="6"><output id="horasTexto">6 h por semana</output></div>
+        </div>
+        <fieldset class="campo"><legend>Em que dias, normalmente</legend>
+          <div class="fichas" data-nome="dias" data-tipo="checkbox" data-opcoes="Seg|Ter|Qua|Qui|Sex|Sáb|Dom"></div></fieldset>
+        <fieldset class="campo"><legend>Em que horários</legend>
+          <div class="fichas" data-nome="periodos" data-tipo="checkbox" data-opcoes="Manhã|Tarde|Noite|Madrugada"></div></fieldset>
+        <fieldset class="campo"><legend>Numa equipe pequena ninguém vai te passar tarefa a toda hora. Como você costuma agir?</legend>
+          <div class="cartoes-opcao" data-nome="proatividade" data-opcoes="Procuro o que falta e começo, avisando o que estou fazendo|Proponho a ideia e espero um ok antes de começar|Prefiro receber tarefas bem definidas"></div></fieldset>
+        <label class="campo"><span>Conte uma vez em que você fez algo sem ninguém pedir <em>(opcional)</em></span><textarea name="proatividadeExemplo" maxlength="1200" rows="4" placeholder="Pode ser em qualquer lugar: escola, trabalho, outro servidor, um projeto seu."></textarea></label>
+      </section>
+
+      <!-- 3 -->
+      <section class="etapa" data-titulo="Suas áreas" hidden>
+        <header><span class="rotulo">Etapa 3 de 5</span><h1>Suas áreas</h1><p>Separamos o que você já faz do que você quer fazer. Começar do zero também vale.</p></header>
+        <fieldset class="campo"><legend>Onde você já tem experiência</legend>
+          <div class="fichas" data-nome="experiencias" data-tipo="checkbox" id="experiencias"></div></fieldset>
+        <fieldset class="campo"><legend>Onde você quer atuar na equipe</legend>
+          <div class="escolha-areas" id="areas"></div></fieldset>
+        <div id="porArea"></div>
+      </section>
+
+      <!-- 4 -->
+      <section class="etapa" data-titulo="Você, por você" hidden>
+        <header><span class="rotulo">Etapa 4 de 5</span><h1>Você, por você</h1><p>Responda do seu jeito. Sinceridade conta mais que resposta bonita.</p></header>
+        <div class="campos dois">
+          <label class="campo"><span>Suas qualidades</span><textarea name="qualidades" required maxlength="800" rows="4"></textarea></label>
+          <label class="campo"><span>Seus defeitos</span><textarea name="defeitos" required maxlength="800" rows="4"></textarea></label>
+        </div>
+        <fieldset class="campo"><legend>Como você lida com crítica ao seu trabalho</legend>
+          <div class="cartoes-opcao tres" data-nome="criticas" data-opcoes="Lido bem|Depende de como ela vem|Ainda é difícil para mim"></div></fieldset>
+        <label class="campo"><span>E quando pedem para refazer algo que você gostou de fazer? <em>(opcional)</em></span><textarea name="criticasComo" maxlength="800" rows="3"></textarea></label>
+        <label class="campo"><span>Por que você quer entrar na equipe</span><textarea name="motivacao" required maxlength="1500" rows="5"></textarea></label>
+        <fieldset class="campo"><legend>Você também quer jogar no servidor, como jogador?</legend>
+          <div class="fichas" data-nome="jogar" data-tipo="radio" data-opcoes="Sim|Não|Ainda não sei"></div></fieldset>
+        <label class="campo"><span>Algo a acrescentar? <em>(opcional)</em></span><textarea name="extra" maxlength="1500" rows="3"></textarea></label>
+      </section>
+
+      <!-- 5 -->
+      <section class="etapa" data-titulo="Termos e envio" hidden>
+        <header><span class="rotulo">Etapa 5 de 5</span><h1>Termos e envio</h1><p>Leia com calma. Cada item vale para quem entra na equipe.</p></header>
+        <div id="termos" class="termos"></div>
+        <div class="resumo" id="resumo"></div>
+        <label class="pote" aria-hidden="true">Não preencha<input name="site" tabindex="-1" autocomplete="off"></label>
+        <p class="erro-envio" id="erroEnvio" role="alert" hidden></p>
+      </section>
+
+      <!-- recebido -->
+      <section class="recebido" id="recebido" hidden>
+        <div class="selo-ok" aria-hidden="true"></div>
+        <span class="rotulo">Ficha recebida</span>
+        <h1>Obrigado. A ilha anotou.</h1>
+        <p id="recebidoTexto"></p>
+        <div class="acoes"><a class="mc jogar" href="painel.html">Ver o painel ao vivo</a><a class="mc" id="linkDiscord" href="#" hidden target="_blank" rel="noopener">Entrar no Discord</a></div>
+      </section>
+
+      <footer class="navegacao" id="navegacao">
+        <button type="button" class="mc" id="voltar">Voltar</button>
+        <span class="aviso-campo" id="avisoCampo" role="status" aria-live="polite"></span>
+        <button type="button" class="mc jogar" id="seguir">Continuar</button>
+      </footer>
+  </form>
+</main>
+
+<nav class="barra-itens" aria-label="Etapas">
+  <p class="nome-etapa" id="nomeEtapa"></p>
+  <ol id="etapas"></ol>
+  <div class="xp-ficha" aria-hidden="true"><i id="barra"></i></div>
+</nav>
+
+<script src="js/config.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/comum.js"></script>
+<script src="js/candidatura.js"></script>
+<script type="module" src="js/fundo.js"></script>
+</body>
+</html>

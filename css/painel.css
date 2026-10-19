@@ -1,0 +1,41 @@
+/* Painel ao vivo: torres na ilha, plaquinhas de nome e o chat do jogo. */
+.painel { position: relative; z-index: 2; min-height: 100vh; }
+.placar-topo { position: absolute; left: clamp(16px, 4vw, 48px); top: 86px; }
+.placar-topo .rotulo { display: flex; align-items: center; gap: 8px; margin: 0; color: #fff; }
+.placar-topo h1 { margin: 6px 0 0; display: flex; align-items: flex-end; gap: 16px; }
+.placar-topo h1 b { font: 400 clamp(110px, 15vw, 200px)/0.78 var(--pixel); color: #fff; text-shadow: 0.04em 0.04em 0 #2a2a30; font-weight: 400; font-variant-numeric: tabular-nums; }
+.placar-topo h1 span { font: 400 clamp(32px, 3.4vw, 46px)/0.9 var(--pixel); color: var(--sinal); padding-bottom: 0.2em; max-width: 6em; }
+.explica { margin: 14px 0 0; color: #c9ccd2; font-size: 15px; text-shadow: 0 1px 8px #000; }
+
+/* plaquinha de nome: fundo escuro translúcido, texto branco, como a do jogador */
+.placas { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.placa { position: absolute; left: 0; top: 0; padding: 2px 8px 4px; background: rgba(0, 0, 0, 0.4); color: #fff; white-space: nowrap; font: 400 24px/1 var(--pixel); }
+.placa b { color: var(--sinal); font-weight: 400; margin-right: 2px; }
+.placa.nova { animation: nova 2.4s steps(6); }
+@keyframes nova { 0%, 40% { background: rgba(128, 255, 32, 0.55); } }
+.placas.lista { position: static; display: flex; flex-wrap: wrap; gap: 8px; padding: 320px 16px 0; }
+.placas.lista .placa { position: static; transform: none !important; }
+
+/* chat do jogo: as últimas fichas */
+.chat { position: fixed; left: clamp(8px, 2vw, 24px); bottom: 24px; z-index: 4; width: min(520px, calc(100% - 16px)); }
+.chat ol { list-style: none; margin: 0; padding: 0; }
+.chat li { padding: 3px 8px 4px; background: rgba(0, 0, 0, 0.5); color: #fff; font: 400 22px/1.05 var(--pixel); text-shadow: 2px 2px 0 #3f3f3f; }
+.chat li .quem { color: var(--sinal); }
+.chat li b { color: #ffff55; font-weight: 400; }
+.chat li time { color: #aaa; margin-left: 6px; }
+.chat li.vazio { color: #aaa; }
+.chat li:last-child { animation: chega .5s steps(4); }
+@keyframes chega { from { opacity: 0; transform: translateY(6px); } }
+.canto { position: fixed; right: clamp(16px, 3vw, 36px); bottom: 24px; z-index: 4; }
+
+.tabela { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#estado { color: var(--erro); text-transform: none; letter-spacing: 0; }
+
+@media (max-width: 760px) {
+  .placar-topo { top: 70px; }
+  .chat { bottom: 92px; }
+  .chat li { font-size: 19px; }
+  .canto { left: 12px; right: 12px; bottom: 16px; }
+  .canto .mc { width: 100%; }
+  .placa { font-size: 19px; }
+}
