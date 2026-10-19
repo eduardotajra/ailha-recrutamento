@@ -1,5 +1,9 @@
 /* A Ilha · recrutamento. Interface no idioma do próprio jogo: botão de pedra, botão verde do launcher,
-   caixa de dica roxa, barra de itens, chat. Fundo: a ilha em 3D (js/mundo.js). */
+   caixa de dica roxa, barra de itens, chat. Fundo: a ilha em 3D (js/mundo.js).
+   Fonte: Monocraft (licença OFL, fontes/OFL-Monocraft.txt), desenhada à imagem da fonte do jogo. */
+@font-face { font-family: 'Monocraft'; src: url('../fontes/Monocraft.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Monocraft'; src: url('../fontes/Monocraft-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Monocraft'; src: url('../fontes/Monocraft-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
 :root {
   --tinta: #05070b;
   --texto: #e8e6df;
@@ -14,15 +18,17 @@
   --dica-fundo: rgba(16, 0, 16, 0.94);
   --dica-borda-a: rgba(80, 0, 255, 0.55);
   --dica-borda-b: rgba(40, 0, 127, 0.55);
-  --pixel: 'Jersey 10', 'Courier New', monospace;
-  --mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --corpo: 'IBM Plex Sans', system-ui, sans-serif;
+  --pixel: 'Monocraft', 'Courier New', monospace;
+  --mono: 'Monocraft', 'Courier New', monospace;
+  --corpo: 'Monocraft', 'Courier New', monospace;
+  /* cores do texto do jogo */
+  --mc-cinza: #aaaaaa; --mc-cinza-esc: #555555; --mc-azul: #7c7cff; --mc-roxo: #e05ee0; --mc-amarelo: #ffff55; --mc-aqua: #55ffff; --mc-verde: #55ff55;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--tinta); color: var(--texto); font: 400 16px/1.55 var(--corpo); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body { margin: 0; background: var(--tinta); color: var(--texto); font: 400 14px/1.6 var(--corpo); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 a { color: var(--sinal); }
 ::selection { background: #5000ff; color: #fff; }
 :focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
@@ -31,24 +37,18 @@ img, video, canvas { display: block; }
 /* ---------- mundo e película ---------- */
 #mundo { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: 0; image-rendering: pixelated; }
 .pelicula { position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%); }
-.pelicula::after { /* grão */
-  content: ''; position: absolute; inset: -50%; opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grao 0.6s steps(3) infinite;
-}
-@keyframes grao { 0% { transform: translate(0, 0); } 33% { transform: translate(-3%, 2%); } 66% { transform: translate(2%, -3%); } }
+  background: radial-gradient(130% 100% at 50% 45%, transparent 65%, rgba(0, 0, 0, 0.35) 100%); }
 .sem-webgl #mundo { display: none; }
 .sem-webgl { background: radial-gradient(100% 60% at 50% 100%, #12203a, var(--tinta)); }
 
 /* ---------- barra de cima ---------- */
 .topo {
   position: fixed; top: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center; gap: 18px;
-  padding: 14px clamp(16px, 3vw, 36px); font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  padding: 14px clamp(16px, 3vw, 36px); font: 400 13px/1 var(--mono);
   background: linear-gradient(180deg, rgba(5, 7, 11, 0.85), transparent);
 }
 .marca { display: flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; }
-.marca b { font: 400 30px/0.8 var(--pixel); letter-spacing: .02em; text-transform: none; }
+.marca b { font: 700 18px/1 var(--pixel); text-shadow: 2px 2px 0 #3f3f3f; }
 .marca i { width: 9px; height: 9px; background: var(--sinal); box-shadow: 0 0 10px var(--sinal); }
 .topo nav { display: flex; gap: 4px; margin-left: 12px; }
 .topo nav a { color: var(--apagado); text-decoration: none; padding: 8px 10px; }
@@ -56,7 +56,7 @@ img, video, canvas { display: block; }
 .topo nav a[aria-current]::before { content: '› '; color: var(--sinal); }
 .topo .dir { margin-left: auto; display: flex; align-items: center; gap: 14px; }
 .vivo { display: flex; align-items: center; gap: 8px; color: var(--texto); text-decoration: none; }
-.vivo b { font: 400 22px/0.8 var(--pixel); color: var(--sinal); letter-spacing: 0; }
+.vivo b { font: 700 15px/1 var(--pixel); color: var(--mc-aqua); }
 .ponto { width: 8px; height: 8px; background: var(--erro); animation: pisca 1.4s steps(2) infinite; }
 @keyframes pisca { 50% { opacity: .2; } }
 .botao-som { background: none; border: 0; color: var(--apagado); cursor: pointer; font: inherit; letter-spacing: inherit; display: flex; align-items: center; gap: 6px; padding: 8px 4px; }
@@ -72,14 +72,14 @@ img, video, canvas { display: block; }
   --f: #6e6e6e; --l: #a9a9a9; --e: #4a4a4a;
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap;
   min-height: 44px; padding: 6px 22px 8px; cursor: pointer; text-decoration: none; user-select: none;
-  font: 400 26px/1 var(--pixel); letter-spacing: .02em; color: #e8e8e8; text-shadow: 2px 2px 0 #3a3a3a;
+  font: 400 15px/1 var(--pixel); color: #e8e8e8; text-shadow: 2px 2px 0 #3a3a3a;
   background: var(--f); border: 2px solid #000; border-radius: 0;
   box-shadow: inset 2px 2px 0 var(--l), inset -2px -4px 0 var(--e);
 }
 .mc:hover { --f: #7c86c0; --l: #b8c0f0; --e: #4a5288; outline: 2px solid #fff; outline-offset: -2px; color: #ffffa0; }
 .mc:active { box-shadow: inset 2px 4px 0 var(--e), inset -2px -2px 0 var(--l); padding-top: 8px; padding-bottom: 6px; }
 .mc[disabled] { --f: #2c2c2c; --l: #3c3c3c; --e: #202020; color: #777; text-shadow: none; cursor: not-allowed; outline: 0; }
-.mc.jogar { --f: var(--verde); --l: var(--verde-claro); --e: var(--verde-escuro); color: #fff; text-shadow: 2px 2px 0 #173d0f; min-height: 58px; padding: 8px 34px 12px; font-size: 34px; }
+.mc.jogar { --f: var(--verde); --l: var(--verde-claro); --e: var(--verde-escuro); color: #fff; text-shadow: 2px 2px 0 #173d0f; min-height: 56px; padding: 8px 34px 12px; font-size: 18px; font-weight: 700; }
 .mc.jogar:hover { --f: #47a52e; --l: #6fd04c; --e: #255e18; color: #fff; }
 
 /* ---------- caixa de dica (a janelinha roxa que aparece sobre os itens) ---------- */
@@ -88,20 +88,20 @@ img, video, canvas { display: block; }
   box-shadow: 0 0 0 2px var(--dica-fundo), inset 0 0 0 2px var(--dica-borda-a), inset 0 -2px 0 2px var(--dica-borda-b), 0 30px 80px rgba(0, 0, 0, 0.5);
 }
 
-.rotulo { font: 500 12px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--apagado); }
+.rotulo { font: 400 13px/1.3 var(--mono); color: var(--mc-cinza); }
 .rotulo b { color: var(--sinal); font-weight: 500; }
 
 /* ---------- abertura: o rádio sintonizando ---------- */
 .abertura { position: fixed; inset: 0; z-index: 100; background: #000; display: grid; place-items: center; transition: opacity 1.2s ease; }
 .abertura.some { opacity: 0; pointer-events: none; }
 .abertura canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .16; image-rendering: pixelated; }
-.abertura pre { position: relative; margin: 0; padding: 0 24px; font: 400 clamp(14px, 1.6vw, 18px)/1.9 var(--mono); color: #cfd6dc; white-space: pre-wrap; max-width: 640px; width: 100%; }
+.abertura pre { position: relative; margin: 0; padding: 0 24px; font: 400 clamp(14px, 1.5vw, 17px)/1.9 var(--mono); color: #cfd6dc; white-space: pre-wrap; max-width: 640px; width: 100%; }
 .abertura pre .cur { display: inline-block; width: .6em; height: 1.1em; background: var(--sinal); vertical-align: -0.15em; animation: pisca 1s steps(2) infinite; }
-.abertura button { position: absolute; right: 22px; bottom: 22px; background: none; border: 1px solid #333; color: #888; font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; padding: 10px 14px; cursor: pointer; }
+.abertura button { position: absolute; right: 22px; bottom: 22px; background: none; border: 1px solid #333; color: #888; font: 400 12px/1 var(--mono); padding: 10px 14px; cursor: pointer; }
 .abertura button:hover { color: #fff; border-color: #888; }
 
 /* rodapé curto */
-.rodape { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; padding: 26px clamp(16px, 3vw, 36px) 30px; font: 400 12px/1.5 var(--mono); color: var(--fraco); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .85) 40%); }
+.rodape { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; padding: 26px clamp(16px, 3vw, 36px) 30px; font: 400 11px/1.6 var(--mono); color: var(--fraco); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .85) 40%); }
 
 .aviso-teste { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 90; pointer-events: none; padding: 6px 12px; background: rgba(0, 0, 0, 0.75); color: var(--aviso); font: 500 11px/1.3 var(--mono); letter-spacing: .04em; white-space: nowrap; }
 
@@ -109,7 +109,7 @@ img, video, canvas { display: block; }
   .topo nav { display: none; }
   .topo { gap: 10px; }
   .botao-som span:last-child { display: none; }
-  .mc.jogar { font-size: 28px; width: 100%; }
+  .mc.jogar { font-size: 17px; width: 100%; }
   .aviso-teste { white-space: normal; width: calc(100% - 24px); text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) {

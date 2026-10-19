@@ -21,7 +21,7 @@ window.ILHA = {
   trailer: "",
 
   // Convite do Discord (aparece no fim da candidatura e no rodapé). Vazio = não aparece.
-  discord: "",
+  discord: "https://discord.gg/x9AK6nPxTr",
 
   // As áreas em que a equipe precisa de gente. A ordem aqui é a ordem no site.
   cargos: [
@@ -29,7 +29,8 @@ window.ILHA = {
       id: "construcao",
       nome: "Construção",
       icone: "▣",
-      chamada: "Cada ruína que alguém encontra, outra pessoa levantou.",
+      chamada: "Vilas, ruínas, postos e interiores para o mapa.",
+      bloco: "tijolo",
       sobre:
         "Vilas, ruínas, postos, interiores. Tudo o que o jogador encontra pelo caminho e que conta uma história sem precisar de texto.",
       faz: [
@@ -56,7 +57,8 @@ window.ILHA = {
       id: "arte",
       nome: "Arte",
       icone: "◩",
-      chamada: "Tudo o que se vê na tela começou num pixel.",
+      chamada: "Texturas, ícones e artes do servidor, em pixel art.",
+      bloco: "la",
       sobre:
         "Texturas de blocos, itens e criaturas em pixel art, ícones, telas e as artes de divulgação do servidor.",
       faz: [
@@ -84,7 +86,8 @@ window.ILHA = {
       id: "modelagem",
       nome: "Modelagem",
       icone: "◰",
-      chamada: "Se tem forma, passou pela mão de alguém.",
+      chamada: "Modelos de blocos, itens e criaturas no Blockbench.",
+      bloco: "argila",
       sobre:
         "Modelos em Blockbench para blocos, itens, equipamentos e criaturas do mod. Às vezes com animação.",
       faz: [
@@ -111,7 +114,8 @@ window.ILHA = {
       id: "lore",
       nome: "Escrita de lore",
       icone: "✎",
-      chamada: "A história não se escreve sozinha. Ainda.",
+      chamada: "Diários, cartas, registros e eventos da história.",
+      bloco: "estante",
       sobre:
         "Diários, cartas, registros, falas e eventos. Você entra na história por dentro e ajuda a escrever o que ainda não aconteceu.",
       faz: [
@@ -140,7 +144,8 @@ window.ILHA = {
       id: "arquivo",
       nome: "Organização da lore",
       icone: "☰",
-      chamada: "Alguém precisa lembrar de tudo.",
+      chamada: "Reunir, ordenar e manter a história em dia.",
+      bloco: "barril_lado",
       sobre:
         "Já existe muita coisa escrita e espalhada. Alguém precisa reunir, ordenar, apontar o que contradiz o quê e manter isso em dia.",
       faz: [

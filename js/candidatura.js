@@ -30,7 +30,7 @@
   areas.innerHTML = C.cargos.map(c => `
     <label class="area-op">
       <input type="checkbox" name="cargos" value="${c.id}">
-      <span class="area-ic" data-cena="${c.cena}" aria-hidden="true">${c.icone}</span>
+      <img class="area-ic" data-bloco="${c.bloco}" alt="" width="46" height="46">
       <span class="area-txt"><b>${esc(c.nome)}</b><small>${esc(c.chamada)}</small></span>
       <span class="area-marca" aria-hidden="true"></span>
     </label>`).join('');

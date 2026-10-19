@@ -1,5 +1,6 @@
 /* Página do chamado: abertura de rádio, áreas montadas a partir do config, câmera presa à rolagem. */
 import { criarMundo } from './mundo.js';
+import { atlas, recorte } from './texturas.js';
 
 const C = window.ILHA;
 const calmo = window.IlhaCalmo;
@@ -13,13 +14,12 @@ areas.outerHTML = C.cargos.map((c, i) => `
   <section class="cap area ${i % 2 ? 'direita' : ''}" id="${c.id}" data-cena="${c.cena}" data-id="${c.id}">
     <div class="gruda">
       <article class="dica">
-        <div class="num"><span class="rotulo">Vaga ${String(i + 1).padStart(2, '0')} / ${String(C.cargos.length).padStart(2, '0')}</span><span class="rotulo"><b>■</b> aberta</span></div>
-        <h2>${esc(c.nome)}</h2>
+        <h2><img class="icone" data-bloco="${c.bloco}" alt="" width="32" height="32">${esc(c.nome)}</h2>
         <p class="chamada">${esc(c.chamada)}</p>
         <button class="mais" type="button" aria-expanded="false">o que você faria</button>
-        <p class="sobre">${esc(c.sobre)}</p>
-        <ul>${c.faz.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
-        <p class="ajuda"><b>Ajuda ter:</b> ${esc(c.ajuda)}</p>
+        <p class="quando">Na equipe:</p>
+        <ul>${c.faz.map(f => `<li>+ ${esc(f)}</li>`).join('')}</ul>
+        <p class="ajuda">Ajuda ter: ${esc(c.ajuda)}</p>
         <div class="xp" aria-hidden="true"><i></i><b>0</b></div>
         <div class="pe">
           <span class="conta"><b data-cargo="${c.id}">0</b><span data-plural>fichas</span></span>
@@ -44,6 +44,26 @@ document.querySelectorAll('.area .mais').forEach(b => b.addEventListener('click'
   b.textContent = aberta ? 'fechar' : 'o que você faria';
 }));
 if (window.IlhaUltima) contar(window.IlhaUltima);
+
+// ---------------------------------------------------------------- ícones: a face do bloco de cada área, desenhada pelo mesmo código da ilha
+atlas();
+document.querySelectorAll('img[data-bloco]').forEach(img => { img.src = recorte(img.dataset.bloco, 16, 16).toDataURL(); });
+
+// aviso de conquista do jogo, na primeira vez que se chega a cada área
+const toasts = document.createElement('div');
+toasts.className = 'conquistas';
+document.body.appendChild(toasts);
+const vistas = new Set();
+function conquista(c) {
+  if (vistas.has(c.id)) return;
+  vistas.add(c.id);
+  const el = document.createElement('div');
+  el.className = 'conquista';
+  el.innerHTML = `<img src="${recorte(c.bloco, 16, 16).toDataURL()}" alt="" width="32" height="32"><span><b>Vaga encontrada!</b>${esc(c.nome)}</span>`;
+  toasts.appendChild(el);
+  setTimeout(() => el.classList.add('sai'), 3800);
+  setTimeout(() => el.remove(), 4400);
+}
 
 // ---------------------------------------------------------------- mundo
 const canvas = document.getElementById('mundo');
@@ -71,9 +91,10 @@ function quadro() {
       const p = clamp((vh * 0.7 - r.top) / Math.max(1, r.height - vh * 0.9));
       if (s.classList.contains('area')) {
         if (mundo) mundo.cena(s.dataset.cena, p);
+        if (p > 0.08) conquista(C.cargos.find(c => c.id === s.dataset.id));
         const xp = s.querySelector('.xp');
         xp.firstElementChild.style.width = (p * 100).toFixed(1) + '%';
-        xp.lastElementChild.textContent = Math.floor(p * 30);
+        xp.lastElementChild.textContent = Math.floor(p * 30); // nível de experiência, como no jogo
       } else if (s.classList.contains('final') && p > 0.3 && !s.classList.contains('aceso')) {
         s.classList.add('aceso');
         document.getElementById('fraco').textContent = 'Responda.';
