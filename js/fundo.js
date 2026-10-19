@@ -14,6 +14,7 @@ document.querySelectorAll('img[data-bloco]').forEach(img => { img.src = face(img
 const canvas = document.getElementById('mundo');
 try {
   const mundo = criarMundo(canvas, { escala: 3 });
+  window.IlhaMundo = mundo;
   mundo.completar();
   mundo.orbitar([0, 8, 0], 64, 24, 0.02);
   document.addEventListener('ilha:enviada', () => { mundo.acender(); mundo.orbitar('sinal', 60, 14, 0.02); });

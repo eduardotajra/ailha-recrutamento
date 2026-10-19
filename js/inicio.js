@@ -68,7 +68,7 @@ function conquista(c) {
 // ---------------------------------------------------------------- mundo
 const canvas = document.getElementById('mundo');
 let mundo = null;
-try { mundo = criarMundo(canvas); } catch (e) { document.body.classList.add('sem-webgl'); console.warn('sem WebGL', e); }
+try { mundo = criarMundo(canvas); window.IlhaMundo = mundo; } catch (e) { document.body.classList.add('sem-webgl'); console.warn('sem WebGL', e); }
 const caps = [...document.querySelectorAll('.cap')];
 if (mundo) mundo.definirCaminho(caps.map(s => s.dataset.cena), { alto: true });
 

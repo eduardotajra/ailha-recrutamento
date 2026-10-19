@@ -746,5 +746,18 @@ export function criarMundo(canvas, opcoes = {}) {
     contagem(c) { contagem = c; },
     rotuloTorres() { return pilares.map(pl => ({ id: pl.id, ...projetar(pl.x, ph + Math.max(pl.mostra, 0) + 0.2, pl.z) })); },
     completar() { for (const [n, c] of Object.entries(cenas)) if (n !== 'sinal') c.aplicar(1); },
+    // conferência para os testes: algum ponto por onde a câmera passa fica dentro (ou colado) de terra ou de árvore?
+    _verificar(orbitas = []) {
+      const solido = (x, y, z) => { const xi = Math.round(x), yi = Math.round(y), zi = Math.round(z); return yi <= H(xi, zi) || ocupado.has(xi + ',' + yi + ',' + zi); };
+      const encosta = v => [[0, 0, 0], [0.45, 0, 0], [-0.45, 0, 0], [0, 0.45, 0], [0, -0.45, 0], [0, 0, 0.45], [0, 0, -0.45]].some(([a, b, c]) => solido(v.x + a, v.y + b, v.z + c));
+      const ruins = [];
+      if (caminho) for (let i = 0; i <= 600; i++) { const v = caminho.pos.getPoint(i / 600); if (encosta(v)) ruins.push(['caminho', +(i / 600).toFixed(3), v.toArray().map(n => +n.toFixed(1))]); }
+      for (const [n, c] of Object.entries(cenas)) if (c.camera && encosta(new THREE.Vector3(...c.camera))) ruins.push(['cena', n, c.camera]);
+      orbitas.forEach(([alvo, r, h]) => {
+        const c = cenas[alvo] ? cenas[alvo].alvo : alvo;
+        for (let i = 0; i < 360; i++) { const a = i / 360 * Math.PI * 2, v = new THREE.Vector3(c[0] + Math.cos(a) * r, c[1] + h, c[2] + Math.sin(a) * r); if (encosta(v)) ruins.push(['orbita', String(alvo), i]); }
+      });
+      return ruins;
+    },
   };
 }

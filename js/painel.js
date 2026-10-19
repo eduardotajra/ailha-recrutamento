@@ -10,6 +10,7 @@ let anterior = null;
 let mundo = null;
 try {
   mundo = criarMundo(document.getElementById('mundo'));
+  window.IlhaMundo = mundo;
   mundo.completar();
   mundo.acender();
   mundo.torres(ids);
