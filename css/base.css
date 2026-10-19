@@ -39,6 +39,11 @@ img, video, canvas { display: block; }
 .pelicula { position: fixed; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(130% 100% at 50% 45%, transparent 65%, rgba(0, 0, 0, 0.35) 100%); }
 .sem-webgl #mundo { display: none; }
+/* véu de névoa rente ao pé da tela, passando devagar */
+.veu { position: fixed; left: -20%; right: -20%; bottom: -10%; height: 55%; z-index: 1; pointer-events: none; opacity: .5; }
+.veu i { position: absolute; inset: 0; background: radial-gradient(40% 50% at 30% 80%, rgba(150, 165, 190, .16), transparent 70%), radial-gradient(35% 45% at 75% 85%, rgba(150, 165, 190, .12), transparent 70%); animation: veu 70s linear infinite alternate; }
+.veu i:nth-child(2) { animation-duration: 95s; animation-direction: alternate-reverse; opacity: .8; }
+@keyframes veu { from { transform: translateX(-8%); } to { transform: translateX(8%); } }
 .sem-webgl { background: radial-gradient(100% 60% at 50% 100%, #12203a, var(--tinta)); }
 
 /* ---------- barra de cima ---------- */

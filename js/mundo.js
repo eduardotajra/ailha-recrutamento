@@ -70,10 +70,26 @@ export function criarMundo(canvas, opcoes = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const cena = new THREE.Scene();
   cena.background = new THREE.Color(0x080b12);
-  cena.fog = new THREE.Fog(0x0b1019, 50, 180);
+  cena.fog = new THREE.Fog(0x0d131c, 30, 150);
   const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 900);
 
   // ---- material de bloco: atlas + sombra de face (topo claro, lados mais escuros, como no jogo)
+  // névoa rasteira: mais grossa perto do mar, rarefeita no alto, se mexendo devagar; mais fraca bem perto da câmera
+  const uNT = { value: 0 };
+  function comNevoa(s) {
+    s.uniforms.uNT = uNT;
+    s.vertexShader = 'varying vec3 vMundo;\n' + s.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
+      vec4 nvMundo = vec4(transformed, 1.0);
+      #ifdef USE_INSTANCING
+        nvMundo = instanceMatrix * nvMundo;
+      #endif
+      vMundo = (modelMatrix * nvMundo).xyz;`);
+    s.fragmentShader = 'varying vec3 vMundo;\nuniform float uNT;\n' + s.fragmentShader.replace('#include <fog_fragment>', `#include <fog_fragment>
+      float nAlt = 1.0 - smoothstep(${AGUA}.0 + 0.5, ${AGUA}.0 + 12.0, vMundo.y);
+      float nOnda = 0.5 + 0.5 * sin(vMundo.x * 0.11 + uNT * 0.22) * sin(vMundo.z * 0.09 - uNT * 0.17);
+      float nDist = smoothstep(2.0, 36.0, length(vMundo - cameraPosition));
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.16, 0.19, 0.25), clamp(nAlt * (0.4 + 0.5 * nOnda) * nDist, 0.0, 0.82));`);
+  }
   const texAtlas = new THREE.CanvasTexture(atlas());
   texAtlas.magFilter = texAtlas.minFilter = THREE.NearestFilter;
   texAtlas.generateMipmaps = false;
@@ -85,6 +101,7 @@ export function criarMundo(canvas, opcoes = {}) {
       vec2 cel = vec2(mod(tileId, ${N}.0), floor(tileId / ${N}.0));
       vec2 q = uv * 0.996 + 0.002;
       vMapUv = vec2((cel.x + q.x) / ${N}.0, 1.0 - (cel.y + 1.0 - q.y) / ${LINHAS}.0);`);
+    comNevoa(s);
   };
   const caixa = new THREE.BoxGeometry(1, 1, 1);
   {
@@ -118,7 +135,9 @@ export function criarMundo(canvas, opcoes = {}) {
       const nome = Array.isArray(tex) ? tex[i] : tex;
       const c = typeof nome === 'string' ? recorte(nome, a * 16, b * 16) : nome;
       const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.SRGBColorSpace;
-      return new THREE.MeshLambertMaterial({ map: t, ...extra });
+      const m = new THREE.MeshLambertMaterial({ map: t, ...extra });
+      m.onBeforeCompile = comNevoa;
+      return m;
     });
     return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), faces);
   }
@@ -162,6 +181,7 @@ export function criarMundo(canvas, opcoes = {}) {
     s.uniforms.uT = tempoAgua;
     s.vertexShader = 'uniform float uT;\n' + s.vertexShader.replace('#include <begin_vertex>',
       '#include <begin_vertex>\nvec2 q = floor(position.xy / 4.0) * 4.0;\ntransformed.z += (sin(q.x * 0.21 + uT * 0.9) + cos(q.y * 0.17 + uT * 0.7)) * 0.09;');
+    comNevoa(s);
   };
   cena.add(agua);
 
@@ -519,7 +539,7 @@ export function criarMundo(canvas, opcoes = {}) {
   function laco(agora) {
     if (!rodando) return;
     const t = (agora - t0) / 1000, dt = Math.min(0.1, t - tAnterior); tAnterior = t;
-    tempoAgua.value = t;
+    tempoAgua.value = t; uNT.value = t;
     for (const c of Object.values(cenas)) if (c.quadro) c.quadro(t, dt);
 
     if (orbita) {
