@@ -15,8 +15,8 @@ const canvas = document.getElementById('mundo');
 try {
   const mundo = criarMundo(canvas, { escala: 3 });
   mundo.completar();
-  mundo.orbitar('livro', 20, 8, 0.025);
-  document.addEventListener('ilha:enviada', () => { mundo.acender(); mundo.orbitar('sinal', 46, 6, 0.02); });
+  mundo.orbitar([0, 8, 0], 64, 24, 0.02);
+  document.addEventListener('ilha:enviada', () => { mundo.acender(); mundo.orbitar('sinal', 60, 14, 0.02); });
 } catch (e) {
   document.body.classList.add('sem-webgl');
 }
